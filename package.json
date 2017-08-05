@@ -1,0 +1,24 @@
+{
+  "name": "hlsjs-ipfs-loader",
+  "version": "0.0.0",
+  "description": "IPFS loader for hls.js",
+  "main": "src/index.js",
+  "scripts": {
+    "build": "gulp build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/moshisushi/hlsjs-ipfs-loader.git"
+  },
+  "author": "Henry Rodrick <moshisushi@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/moshisushi/hlsjs-ipfs-loader/issues"
+  },
+  "homepage": "https://github.com/moshisushi/hlsjs-ipfs-loader#readme",
+  "dependencies": {
+    "aegir": "^11.0.2",
+    "gulp": "^3.9.1",
+    "lodash": "^4.17.4"
+  }
+}
