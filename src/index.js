@@ -4,6 +4,7 @@ const _ = require('lodash')
 
 class HlsjsIPFSLoader {
   constructor(config) {
+    this.ipfs = config.ipfs
     this.hash = config.ipfsHash
   }
 
@@ -35,7 +36,7 @@ class HlsjsIPFSLoader {
     var urlParts = context.url.split("/")
     var filename = urlParts[urlParts.length - 1]
 
-    getFile(this.hash, filename, function(err, res) {
+    getFile(this.ipfs, this.hash, filename, function(err, res) {
       if (err) {
         console.log(err);
         return
@@ -57,10 +58,11 @@ class HlsjsIPFSLoader {
   }
 }
 
-function getFile(rootHash, filename, callback) {
+function getFile(ipfs, rootHash, filename, callback) {
+  console.log("ipfs = " + ipfs)
   if (!callback) callback = function (err, res) {}
   console.log("Fetching hash for '" + rootHash + "/" + filename + "'")
-  node.object.get(rootHash, function(err, res) {
+  ipfs.object.get(rootHash, function(err, res) {
     if (err) return callback(err)
 
     var hash = null
@@ -86,7 +88,7 @@ function getFile(rootHash, filename, callback) {
     var bufView = new Uint8Array(resBuf)
     var offs = 0
 
-    node.files.cat(hash, function (err, stream) {
+    ipfs.files.cat(hash, function (err, stream) {
       console.log("Received stream for file '" + rootHash + "/" +
         fileName + "'")
       if (err) return callback(err)

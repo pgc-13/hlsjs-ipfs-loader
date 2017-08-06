@@ -6,25 +6,26 @@
 
     <script>
 const repoPath = 'ipfs-' + Math.random()
-const node = new Ipfs({
+const ipfs = new Ipfs({
   init: false,
   start: false,
   repo: repoPath
 })
-node.init(handleInit)
+ipfs.init(handleInit)
 
 function handleInit (err) {
   if (err) {
     throw err
   }
-  node.start(() => {
-    node.swarm.connect("/dns4/soundclart.com/tcp/8676/wss/ipfs/QmPpDh8rgNm4MfRFGr2hCuqnaC4mSrqiSovVQ3JT4AnNLR")
-    var testhash = "QmNtXCmEEkLQZctXcEECoeiL36iamdDURd88aDEK6Aj1Gm";
+  ipfs.start(() => {
+    ipfs.swarm.connect("/dns4/soundclart.com/tcp/8676/wss/ipfs/QmPpDh8rgNm4MfRFGr2hCuqnaC4mSrqiSovVQ3JT4AnNLR")
+    var testhash = "QmcCRDp2vvZR7UjdjXCocxLLK3wxNLBY7AU8WvVUWBcHSR"
     Hls.DefaultConfig.loader = HlsjsIpfsLoader;
     Hls.DefaultConfig.debug = false;
     if(Hls.isSupported()) {
       var video = document.getElementById('video');
       var hls = new Hls();
+      hls.config.ipfs = ipfs;
       hls.config.ipfsHash = testhash;
       hls.loadSource('master.m3u8');
       hls.attachMedia(video);
