@@ -1,5 +1,6 @@
 # hlsjs-ipfs-loader
-A js-ipfs loader for the hls.js JavaScript HLS client
+A [js-ipfs](https://github.com/ipfs/js-ipfs) loader for the
+[hls.js](https://github.com/video-dev/hls.js) JavaScript HLS client
 
 ## Building
 
