@@ -4,7 +4,8 @@ A js-ipfs loader for the hls.js JavaScript HLS client
 ## Building
 
 To build hlsjs-ipfs-loader,  make sure you have the latest version of npm
-installed. Then simply run:
+installed. Then simply run the following commands from the hlsjs-ipfs-loader
+project root:
 ```
 npm install
 npm run build
@@ -21,4 +22,6 @@ Include script tags for HLS.js, js-ipfs and hlsjs-ipfs-loader:
 ```
 
 After including these dependencies, add your own script that hooks everything
-up. Please see this example for more details: 
+up. Please see [this example](examples/basic_usage.html) for more details.
+
+
