@@ -24,7 +24,6 @@ class HlsjsIPFSLoader {
   }
 
   loadInternal() {
-    console.log("loadInternal");
     var stats = this.stats,
         context = this.context,
         config = this.config,
@@ -59,7 +58,6 @@ class HlsjsIPFSLoader {
 }
 
 function getFile(ipfs, rootHash, filename, callback) {
-  console.log("ipfs = " + ipfs)
   if (!callback) callback = function (err, res) {}
   console.log("Fetching hash for '" + rootHash + "/" + filename + "'")
   ipfs.object.get(rootHash, function(err, res) {
