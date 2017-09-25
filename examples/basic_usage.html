@@ -18,8 +18,7 @@ function handleInit (err) {
     throw err
   }
   ipfs.start(() => {
-    ipfs.swarm.connect("/dns4/soundclart.com/tcp/8676/wss/ipfs/QmPpDh8rgNm4MfRFGr2hCuqnaC4mSrqiSovVQ3JT4AnNLR")
-    var testhash = "QmcCRDp2vvZR7UjdjXCocxLLK3wxNLBY7AU8WvVUWBcHSR"
+    var testhash = "QmdpAidwAsBGptFB3b6A9Pyi5coEbgjHrL3K2Qrsutmj9K"
     Hls.DefaultConfig.loader = HlsjsIpfsLoader;
     Hls.DefaultConfig.debug = false;
     if(Hls.isSupported()) {
