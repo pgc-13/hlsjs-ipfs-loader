@@ -1,6 +1,7 @@
 'use strict'
 
 const _ = require('lodash')
+const Duplex = require('stream').Duplex
 
 class HlsjsIPFSLoader {
   constructor(config) {
@@ -90,6 +91,7 @@ function getFile(ipfs, rootHash, filename, callback) {
       console.log("Received stream for file '" + rootHash + "/" +
         fileName + "'")
       if (err) return callback(err)
+      stream = buf2Stream(stream)
       stream.on('data', function (chunk) {
         console.log("Received " + chunk.length + " bytes for file '" +
           rootHash + "/" + fileName + "'")
@@ -108,6 +110,13 @@ function getFile(ipfs, rootHash, filename, callback) {
 
 function buf2str(buf) {
   return String.fromCharCode.apply(null, new Uint8Array(buf))
+}
+
+function buf2Stream(buffer) {  
+  let stream = new Duplex()
+  stream.push(buffer)
+  stream.push(null)
+  return stream
 }
 
 exports = module.exports = HlsjsIPFSLoader
