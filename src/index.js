@@ -112,7 +112,7 @@ function buf2str(buf) {
   return String.fromCharCode.apply(null, new Uint8Array(buf))
 }
 
-function buf2Stream(buffer) {  
+function buf2Stream(buffer) {
   let stream = new Duplex()
   stream.push(buffer)
   stream.push(null)
