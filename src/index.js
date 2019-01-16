@@ -1,8 +1,5 @@
 'use strict'
 
-const _ = require('lodash')
-const Duplex = require('stream').Duplex
-
 class HlsjsIPFSLoader {
   constructor(config) {
     this.ipfs = config.ipfs
@@ -67,9 +64,9 @@ function getFile(ipfs, rootHash, filename, callback) {
     var hash = null
     var fileSize, fileName
 
-    _.each(res.links, function(link) {
+    res.links.forEach(function(link) {
       if (link.name === filename) {
-        hash = link.multihash
+        hash = link.cid.toString()
         fileSize = link.size
         fileName = link.name
         return false
@@ -87,36 +84,25 @@ function getFile(ipfs, rootHash, filename, callback) {
     var bufView = new Uint8Array(resBuf)
     var offs = 0
 
-    ipfs.files.cat(hash, function (err, stream) {
-      console.log("Received stream for file '" + rootHash + "/" +
-        fileName + "'")
-      if (err) return callback(err)
-      stream = buf2Stream(stream)
-      stream.on('data', function (chunk) {
-        console.log("Received " + chunk.length + " bytes for file '" +
-          rootHash + "/" + fileName + "'")
-        bufView.set(chunk, offs)
-        offs += chunk.length
-      });
-      stream.on('error', function (err) {
-        callback(err, null)
-      });
-      stream.on('end', function () {
-        callback(null, resBuf)
-      });
-    })
+    const stream = ipfs.catReadableStream(hash)
+    console.log("Received stream for file '" + rootHash + "/" + fileName + "'")
+    stream.on('data', function (chunk) {
+      console.log("Received " + chunk.length + " bytes for file '" +
+        rootHash + "/" + fileName + "'")
+      bufView.set(chunk, offs)
+      offs += chunk.length
+    });
+    stream.on('error', function (err) {
+      callback(err, null)
+    });
+    stream.on('end', function () {
+      callback(null, resBuf)
+    });
   });
 }
 
 function buf2str(buf) {
   return String.fromCharCode.apply(null, new Uint8Array(buf))
-}
-
-function buf2Stream(buffer) {
-  let stream = new Duplex()
-  stream.push(buffer)
-  stream.push(null)
-  return stream
 }
 
 exports = module.exports = HlsjsIPFSLoader
