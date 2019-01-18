@@ -18,7 +18,6 @@
   "homepage": "https://github.com/moshisushi/hlsjs-ipfs-loader#readme",
   "dependencies": {
     "aegir": "^11.0.2",
-    "gulp": "^3.9.1",
-    "lodash": "^4.17.4"
+    "gulp": "^3.9.1"
   }
 }
