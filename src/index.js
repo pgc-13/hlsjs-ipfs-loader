@@ -67,11 +67,11 @@ function getFile(ipfs, rootHash, filename, callback) {
     var hash = null
     var fileSize, fileName
 
-    _.each(res.links, function(link) {
-      if (link.name === filename) {
-        hash = link.multihash
-        fileSize = link.size
-        fileName = link.name
+    _.each(res.Links, function(link) {
+      if (link.Name === filename) {
+        hash = link.Hash
+        fileSize = link.Tsize
+        fileName = link.Name
         return false
       }
     });
