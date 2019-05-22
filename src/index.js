@@ -64,7 +64,7 @@ function getFile(ipfs, rootHash, filename, callback) {
     var hash = null
     var fileSize, fileName
 
-    res.links.forEach(function(link) {
+    res.Links.forEach(function(link) {
       if (link.Name === filename) {
         hash = link.Hash
         fileSize = link.Tsize
