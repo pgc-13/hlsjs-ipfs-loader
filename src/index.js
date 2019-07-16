@@ -64,11 +64,11 @@ function getFile(ipfs, rootHash, filename, callback) {
     var hash = null
     var fileSize, fileName
 
-    res.links.forEach(function(link) {
-      if (link.name === filename) {
-        hash = link.cid.toString()
-        fileSize = link.size
-        fileName = link.name
+    res.Links.forEach(function(link) {
+      if (link.Name === filename) {
+        hash = link.Hash
+        fileSize = link.Tsize
+        fileName = link.Name
         return false
       }
     });
