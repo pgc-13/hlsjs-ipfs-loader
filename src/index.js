@@ -79,25 +79,16 @@ function getFile(ipfs, rootHash, filename, callback) {
     }
 
     console.log("Requesting '" + rootHash + "/" + filename + "'")
+    
+    const stream = ipfs.cat(hash);
+    stream.then((value) => {
+      console.log("Received data for file '" + rootHash + "/" + fileName + "' size: " + value.length)
+      
+      callback(null, value);
+    }).catch((err) => {
+      callback(err, null);
+    })
 
-    var resBuf = new ArrayBuffer(fileSize)
-    var bufView = new Uint8Array(resBuf)
-    var offs = 0
-
-    const stream = ipfs.catReadableStream(hash)
-    console.log("Received stream for file '" + rootHash + "/" + fileName + "'")
-    stream.on('data', function (chunk) {
-      console.log("Received " + chunk.length + " bytes for file '" +
-        rootHash + "/" + fileName + "'")
-      bufView.set(chunk, offs)
-      offs += chunk.length
-    });
-    stream.on('error', function (err) {
-      callback(err, null)
-    });
-    stream.on('end', function () {
-      callback(null, resBuf)
-    });
   });
 }
 
