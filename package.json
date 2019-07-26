@@ -1,6 +1,6 @@
 {
   "name": "hlsjs-ipfs-loader",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "IPFS loader for hls.js",
   "main": "src/index.js",
   "scripts": {
