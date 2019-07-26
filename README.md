@@ -25,6 +25,8 @@ Include script tags for HLS.js, js-ipfs and hlsjs-ipfs-loader:
 After including these dependencies, add your own script that hooks everything
 up. Please see [this example](examples/basic_usage.html) for more details.
 
+You can also [click here](https://moshisushi.github.io/ipfs_hls_example.html) to see this example in action in your browser, without checking out any code.
+
 NOTE: Chrome's strict security policies block the example from running
 locally, so you will either have to spin up a local web server to host it from
 (unless you want to explicitly fiddle with the policies),
