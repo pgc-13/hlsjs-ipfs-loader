@@ -50,13 +50,10 @@ function getFile(ipfs, rootHash, filename) {
       throw new Error(`File not found: ${rootHash}/${filename}`)
     }
 
-    const hash = link.hash,
-          fileName = link.name
+    console.log(`Requesting '${link.path}'`)
 
-    console.log(`Requesting '${rootHash}/${fileName}'`)
-
-    return ipfs.cat(hash).then(value => {
-      console.log(`Received data for file '${rootHash}/${fileName}' size: ${value.length}`)
+    return ipfs.cat(link.hash).then(value => {
+      console.log(`Received data for file '${link.path}' size: ${value.length}`)
       return value
     })
   })
