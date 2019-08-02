@@ -43,18 +43,17 @@ class HlsjsIPFSLoader {
 function getFile(ipfs, rootHash, filename) {
   console.log(`Fetching hash for '${rootHash}/${filename}'`)
 
-  return ipfs.object.get(rootHash).then(res => {
-    const link = res.Links.find(({ Name }) => (Name === filename))
+  return ipfs.ls(rootHash).then(res => {
+    const link = res.find(({ name }) => (name === filename))
 
     if (link === undefined) {
       throw new Error(`File not found: ${rootHash}/${filename}`)
     }
 
-    const hash = link.Hash,
-          fileSize = link.Tsize,
-          fileName = link.Name
+    const hash = link.hash,
+          fileName = link.name
 
-    console.log(`Requesting '${rootHash}/${filename}'`)
+    console.log(`Requesting '${rootHash}/${fileName}'`)
 
     return ipfs.cat(hash).then(value => {
       console.log(`Received data for file '${rootHash}/${fileName}' size: ${value.length}`)
