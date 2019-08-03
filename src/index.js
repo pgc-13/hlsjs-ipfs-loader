@@ -63,4 +63,4 @@ function buf2str(buf) {
   return String.fromCharCode.apply(null, new Uint8Array(buf))
 }
 
-exports = module.exports = HlsjsIPFSLoader
+export default HlsjsIPFSLoader
