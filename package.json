@@ -4,7 +4,7 @@
   "description": "IPFS loader for hls.js",
   "main": "src/index.js",
   "scripts": {
-    "build": "gulp build"
+    "build": "aegir build"
   },
   "repository": {
     "type": "git",
@@ -17,7 +17,6 @@
   },
   "homepage": "https://github.com/moshisushi/hlsjs-ipfs-loader#readme",
   "dependencies": {
-    "aegir": "^11.0.2",
-    "gulp": "^3.9.1"
+    "aegir": "^15.2.0"
   }
 }
