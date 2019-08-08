@@ -5,34 +5,33 @@
     <script src="../dist/index.js"></script>
 
     <script>
-const repoPath = 'ipfs-' + Math.random()
-const ipfs = new Ipfs({
-  init: false,
-  start: false,
-  repo: repoPath
-})
-ipfs.init(handleInit)
+if (window.ipfs === undefined) {
+  const repoPath = 'ipfs-' + Math.random()
+  const node = new Ipfs({
+    init: false,
+    start: false,
+    repo: repoPath
+  })
+  node.init().then(() => node.start()).then(() => handleInit(node))
+} else {
+  window.ipfs.enable().then(handleInit)
+}
 
-function handleInit (err) {
-  if (err) {
-    throw err
+function handleInit(node) {
+  const testhash = "QmdpAidwAsBGptFB3b6A9Pyi5coEbgjHrL3K2Qrsutmj9K";
+  Hls.DefaultConfig.loader = HlsjsIpfsLoader;
+  Hls.DefaultConfig.debug = false;
+  if (Hls.isSupported()) {
+    const video = document.getElementById('video');
+    const hls = new Hls();
+    hls.config.ipfs = node;
+    hls.config.ipfsHash = testhash;
+    hls.loadSource('master.m3u8');
+    hls.attachMedia(video);
+    hls.on(Hls.Events.MANIFEST_PARSED, () => {
+      video.play();
+    });
   }
-  ipfs.start(() => {
-    var testhash = "QmdpAidwAsBGptFB3b6A9Pyi5coEbgjHrL3K2Qrsutmj9K"
-    Hls.DefaultConfig.loader = HlsjsIpfsLoader;
-    Hls.DefaultConfig.debug = false;
-    if(Hls.isSupported()) {
-      var video = document.getElementById('video');
-      var hls = new Hls();
-      hls.config.ipfs = ipfs;
-      hls.config.ipfsHash = testhash;
-      hls.loadSource('master.m3u8');
-      hls.attachMedia(video);
-      hls.on(Hls.Events.MANIFEST_PARSED, () => {
-        video.play();
-      });
-    }
-  });
 }
     </script>
 

@@ -4,6 +4,13 @@ class HlsjsIPFSLoader {
   constructor(config) {
     this.ipfs = config.ipfs
     this.hash = config.ipfsHash
+    if (config.debug === false) {
+      this.debug = function() {}
+    } else if (config.debug === true) {
+      this.debug = console.log
+    } else {
+      this.debug = config.debug
+    }
   }
 
   destroy() {
@@ -30,7 +37,7 @@ class HlsjsIPFSLoader {
     const urlParts = context.url.split("/")
     const filename = urlParts[urlParts.length - 1]
 
-    getFile(this.ipfs, this.hash, filename).then(res => {
+    getFile(this.ipfs, this.hash, filename, this.debug).then(res => {
       const data = (context.responseType === 'arraybuffer') ? res : buf2str(res)
       stats.loaded = stats.total = data.length
       stats.tload = Math.max(stats.tfirst, performance.now())
@@ -40,9 +47,9 @@ class HlsjsIPFSLoader {
   }
 }
 
-function getFile(ipfs, rootHash, filename) {
-  console.log(`Fetching hash for '${rootHash}/${filename}'`)
-
+function getFile(ipfs, rootHash, filename, debug) {
+  debug(`Fetching hash for '${rootHash}/${filename}'`)
+    
   return ipfs.ls(rootHash).then(res => {
     const link = res.find(({ name }) => (name === filename))
 
@@ -50,10 +57,10 @@ function getFile(ipfs, rootHash, filename) {
       throw new Error(`File not found: ${rootHash}/${filename}`)
     }
 
-    console.log(`Requesting '${link.path}'`)
+    debug(`Requesting '${link.path}'`)
 
     return ipfs.cat(link.hash).then(value => {
-      console.log(`Received data for file '${link.path}' size: ${value.length}`)
+      debug(`Received data for file '${link.path}' size: ${value.length}`)
       return value
     })
   })
@@ -63,4 +70,4 @@ function buf2str(buf) {
   return String.fromCharCode.apply(null, new Uint8Array(buf))
 }
 
-export default HlsjsIPFSLoader
+exports = module.exports = HlsjsIPFSLoader
