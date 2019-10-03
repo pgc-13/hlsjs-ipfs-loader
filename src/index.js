@@ -49,7 +49,7 @@ class HlsjsIPFSLoader {
    * @param {function} provider 
    */
   setTsListProvider(provider) {
-    this.setTsListProvider = provider;
+    this.tsListProvider = provider;
   }
 
   loadInternal() {
