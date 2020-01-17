@@ -39,21 +39,21 @@ class HlsjsIPFSLoader {
   }
   /**
    * Call this by getting the HLSIPFSLoader instance from hls.js hls.coreComponents[0].loaders.manifest.setM3U8Provider()
-   * @param {function} provider 
+   * @param {function} provider
    */
   setM3U8Provider(provider) {
     this.m3u8provider = provider;
   }
   /**
-   * 
-   * @param {function} provider 
+   *
+   * @param {function} provider
    */
   setTsListProvider(provider) {
     this.tsListProvider = provider;
   }
 
   loadInternal() {
-    const { stats, context, config, callbacks } = this
+    const { stats, context, callbacks } = this
 
     stats.tfirst = Math.max(performance.now(), stats.trequest)
     stats.loaded = 0
@@ -102,32 +102,40 @@ class HlsjsIPFSLoader {
   }
 }
 
-function getFile(ipfs, rootHash, filename, debug) {
+async function getFile(ipfs, rootHash, filename, debug) {
   debug(`Fetching hash for '${rootHash}/${filename}'`)
   if(filename === null) {
-    return ipfs.cat(rootHash).then( value => {
-      debug(`Received data for file '${rootHash}' size: ${value.length}`)
-      return value
-    });
+    return cat(rootHash, ipfs, debug)
   }
-  return ipfs.ls(rootHash).then(res => {
-    const link = res.find(({ name }) => (name === filename))
 
-    if (link === undefined) {
-      throw new Error(`File not found: ${rootHash}/${filename}`)
+  for await (const link of ipfs.ls(rootHash)) {
+    if (link.name !== filename) {
+      continue
     }
 
     debug(`Requesting '${link.path}'`)
+    return cat(link.cid, ipfs, debug)
+  }
 
-    return ipfs.cat(link.hash).then(value => {
-      debug(`Received data for file '${link.path}' size: ${value.length}`)
-      return value
-    })
-  })
+  throw new Error(`File not found: ${rootHash}/${filename}`)
 }
 
 function buf2str(buf) {
   return String.fromCharCode.apply(null, new Uint8Array(buf))
+}
+
+async function cat (cid, ipfs, debug) {
+  let value = new Uint8Array(0)
+
+  for await (const buf of ipfs.cat(cid)) {
+    const newBuf = new Uint8Array(value.length + buf.length)
+    newBuf.set(value)
+    newBuf.set(buf, value.length)
+    value = newBuf
+  }
+
+  debug(`Received data for file '${cid}' size: ${value.length}`)
+  return value
 }
 
 exports = module.exports = HlsjsIPFSLoader
