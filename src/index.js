@@ -2,6 +2,7 @@
 
 class HlsjsIPFSLoader {
   constructor(config) {
+    this._abortFlag = [ false ];
     this.ipfs = config.ipfs
     this.hash = config.ipfsHash
     if (config.debug === false) {
@@ -27,6 +28,7 @@ class HlsjsIPFSLoader {
   }
 
   abort() {
+    this._abortFlag[0] = true;
   }
 
   load(context, config, callbacks) {
@@ -61,6 +63,14 @@ class HlsjsIPFSLoader {
     const urlParts = context.url.split("/")
     const filename = urlParts[urlParts.length - 1]
 
+    const options = {}
+    if (Number.isFinite(context.rangeStart)) {
+        options.offset = context.rangeStart;
+        if (Number.isFinite(context.rangeEnd)) {
+	    options.length = context.rangeEnd - context.rangeStart;
+        }
+    }
+
     if(filename.split(".")[1] === "m3u8" && this.m3u8provider !== null) {
       const res = this.m3u8provider();
       let data;
@@ -92,7 +102,8 @@ class HlsjsIPFSLoader {
       }
       return;
     }
-    getFile(this.ipfs, this.hash, filename, this.debug).then(res => {
+    this._abortFlag[0] = false;
+    getFile(this.ipfs, this.hash, filename, options, this.debug, this._abortFlag).then(res => {
       const data = (context.responseType === 'arraybuffer') ? res : buf2str(res)
       stats.loaded = stats.total = data.length
       stats.tload = Math.max(stats.tfirst, performance.now())
@@ -102,10 +113,10 @@ class HlsjsIPFSLoader {
   }
 }
 
-async function getFile(ipfs, rootHash, filename, debug) {
+async function getFile(ipfs, rootHash, filename, options, debug, abortFlag) {
   debug(`Fetching hash for '${rootHash}/${filename}'`)
   if(filename === null) {
-    return cat(rootHash, ipfs, debug)
+    return cat(rootHash, options, ipfs, debug, abortFlag)
   }
 
   for await (const link of ipfs.ls(rootHash)) {
@@ -113,28 +124,37 @@ async function getFile(ipfs, rootHash, filename, debug) {
       continue
     }
 
-    debug(`Requesting '${link.path}'`)
-    return cat(link.cid, ipfs, debug)
+    debug(`Requesting '${link.path}'`, options)
+    return cat(link.cid, options, ipfs, debug, abortFlag)
   }
 
   throw new Error(`File not found: ${rootHash}/${filename}`)
 }
 
 function buf2str(buf) {
-  return String.fromCharCode.apply(null, new Uint8Array(buf))
+  return new TextDecoder().decode(buf)
 }
 
-async function cat (cid, ipfs, debug) {
-  let value = new Uint8Array(0)
+async function cat (cid, options, ipfs, debug, abortFlag) {
+  const parts = []
+  let length = 0, offset = 0
 
-  for await (const buf of ipfs.cat(cid)) {
-    const newBuf = new Uint8Array(value.length + buf.length)
-    newBuf.set(value)
-    newBuf.set(buf, value.length)
-    value = newBuf
+  for await (const buf of ipfs.cat(cid, options)) {
+    parts.push(buf)
+    length += buf.length
+    if (abortFlag[0]) {
+      debug('Cancel reading from ipfs')
+      break
+    }
   }
 
-  debug(`Received data for file '${cid}' size: ${value.length}`)
+  const value = new Uint8Array(length)
+  for (const buf of parts) {
+    value.set(buf, offset)
+    offset += buf.length
+  }
+
+  debug(`Received data for file '${cid}' size: ${value.length} in ${parts.length} blocks`)
   return value
 }
 
