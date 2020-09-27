@@ -60,8 +60,12 @@ class HlsjsIPFSLoader {
     stats.tfirst = Math.max(performance.now(), stats.trequest)
     stats.loaded = 0
 
-    const urlParts = context.url.split("/")
-    const filename = urlParts[urlParts.length - 1]
+    //When using absolute path (https://example.com/index.html) vs https://example.com/
+    const urlParts = window.location.href.split("/")
+    if(urlParts[urlParts.length - 1] !== "") {
+      urlParts[urlParts.length - 1] = ""
+    }
+    const filename = context.url.replace(urlParts.join("/"), "")
 
     const options = {}
     if (Number.isFinite(context.rangeStart)) {
@@ -115,12 +119,17 @@ class HlsjsIPFSLoader {
 
 async function getFile(ipfs, rootHash, filename, options, debug, abortFlag) {
   debug(`Fetching hash for '${rootHash}/${filename}'`)
+  const path = `${rootHash}/${filename}`
+  const pathParts = path.split("/")
+  const short_filename = pathParts.pop()
+  const basePath = pathParts.join("/")
+
   if(filename === null) {
     return cat(rootHash, options, ipfs, debug, abortFlag)
   }
 
-  for await (const link of ipfs.ls(rootHash)) {
-    if (link.name !== filename) {
+  for await (const link of ipfs.ls(basePath)) {
+    if (link.name !== short_filename) {
       continue
     }
 
