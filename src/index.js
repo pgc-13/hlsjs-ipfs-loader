@@ -116,28 +116,14 @@ class HlsjsIPFSLoader {
     }, console.error)
   }
 }
-
 async function getFile(ipfs, rootHash, filename, options, debug, abortFlag) {
   debug(`Fetching hash for '${rootHash}/${filename}'`)
   const path = `${rootHash}/${filename}`
-  const pathParts = path.split("/")
-  const short_filename = pathParts.pop()
-  const basePath = pathParts.join("/")
-
-  if(filename === null) {
-    return cat(rootHash, options, ipfs, debug, abortFlag)
+  try {
+    return await cat(path, options, ipfs, debug, abortFlag)
+  } catch(ex) {
+    throw new Error(`File not found: ${rootHash}/${filename}`)
   }
-
-  for await (const link of ipfs.ls(basePath)) {
-    if (link.name !== short_filename) {
-      continue
-    }
-
-    debug(`Requesting '${link.path}'`, options)
-    return cat(link.cid, options, ipfs, debug, abortFlag)
-  }
-
-  throw new Error(`File not found: ${rootHash}/${filename}`)
 }
 
 function buf2str(buf) {
