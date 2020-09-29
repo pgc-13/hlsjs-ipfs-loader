@@ -60,8 +60,12 @@ class HlsjsIPFSLoader {
     stats.tfirst = Math.max(performance.now(), stats.trequest)
     stats.loaded = 0
 
-    const urlParts = context.url.split("/")
-    const filename = urlParts[urlParts.length - 1]
+    //When using absolute path (https://example.com/index.html) vs https://example.com/
+    const urlParts = window.location.href.split("/")
+    if(urlParts[urlParts.length - 1] !== "") {
+      urlParts[urlParts.length - 1] = ""
+    }
+    const filename = context.url.replace(urlParts.join("/"), "")
 
     const options = {}
     if (Number.isFinite(context.rangeStart)) {
@@ -112,23 +116,14 @@ class HlsjsIPFSLoader {
     }, console.error)
   }
 }
-
 async function getFile(ipfs, rootHash, filename, options, debug, abortFlag) {
   debug(`Fetching hash for '${rootHash}/${filename}'`)
-  if(filename === null) {
-    return cat(rootHash, options, ipfs, debug, abortFlag)
+  const path = `${rootHash}/${filename}`
+  try {
+    return await cat(path, options, ipfs, debug, abortFlag)
+  } catch(ex) {
+    throw new Error(`File not found: ${rootHash}/${filename}`)
   }
-
-  for await (const link of ipfs.ls(rootHash)) {
-    if (link.name !== filename) {
-      continue
-    }
-
-    debug(`Requesting '${link.path}'`, options)
-    return cat(link.cid, options, ipfs, debug, abortFlag)
-  }
-
-  throw new Error(`File not found: ${rootHash}/${filename}`)
 }
 
 function buf2str(buf) {
