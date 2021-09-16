@@ -16,7 +16,12 @@
     "url": "https://github.com/moshisushi/hlsjs-ipfs-loader/issues"
   },
   "homepage": "https://github.com/moshisushi/hlsjs-ipfs-loader#readme",
-  "dependencies": {
-    "aegir": "^20.5.0"
-  }
+  "devDependencies": {
+    "aegir": "^35.0.3"
+  },
+  "files": [
+    "dist",
+    "examples",
+    "src"
+  ]
 }
