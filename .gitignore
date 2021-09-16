@@ -88,3 +88,4 @@ typings/
 .dynamodb/
 
 *-lock.json
+dist
