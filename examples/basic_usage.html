@@ -18,12 +18,11 @@
 
   function handleInit(node) {
     const testhash = "QmdpAidwAsBGptFB3b6A9Pyi5coEbgjHrL3K2Qrsutmj9K";
-    Hls.DefaultConfig.loader = HlsjsIpfsLoader;
+    Hls.DefaultConfig.loader = HlsjsIPFSLoaderFactory(node);
     Hls.DefaultConfig.debug = false;
     if (Hls.isSupported()) {
       const video = document.getElementById('video');
       const hls = new Hls();
-      hls.config.ipfs = node;
       hls.config.ipfsHash = testhash;
       hls.loadSource('master.m3u8');
       hls.attachMedia(video);
