@@ -106,13 +106,14 @@ function HlsjsIPFSLoaderFactory (ipfs) {
     }
   }
 }
+
 async function getFile(ipfs, rootHash, filename, options, debug, abortFlag) {
-  debug(`Fetching hash for '${rootHash}/${filename}'`)
-  const path = `${rootHash}/${filename}`
+  debug(`Fetching hash for '${ rootHash ? `${ rootHash }/` : ""}${ filename }'`);
+  const path = `${ rootHash ? `${ rootHash }/` : "" }${ filename }`;
   try {
     return await cat(path, options, ipfs, debug, abortFlag)
   } catch(ex) {
-    throw new Error(`File not found: ${rootHash}/${filename}`)
+    throw new Error(`File not found: ${ rootHash ? `${ rootHash }/` : "" }${filename}`)
   }
 }
 
