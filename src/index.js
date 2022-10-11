@@ -108,6 +108,17 @@ function HlsjsIPFSLoaderFactory (ipfs) {
 }
 
 async function getFile(ipfs, rootHash, filename, options, debug, abortFlag) {
+  // Handle external URLs outside of IPFS
+  if (filename.match(/^https?:\/\//)) {
+    debug(`External URL detected, falling back to fetch(${filename})`)
+    const response = await fetch(filename)
+    if (!response.ok) {
+      throw new Error('Failed to fetch external URL: ' + path + ', response.status: ' + response.status);
+    } else {
+      return await response.arrayBuffer();
+    }
+  }
+
   debug(`Fetching hash for '${ rootHash ? `${ rootHash }/` : ""}${ filename }'`);
   const path = `${ rootHash ? `${ rootHash }/` : "" }${ filename }`;
   try {
